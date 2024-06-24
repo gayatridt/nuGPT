@@ -2,7 +2,7 @@ import * as React from 'react';
 import Header from "../Components/Header"
 import ModelDropdown from "../Components/ModelDropdown"
 import Sidebar from "../Components/Sidebar"
-import Textfield from "../Components/Textfield"
+import ChatTexts from './ChatTexts';
 
 
 export default function Chat() {
@@ -11,7 +11,7 @@ export default function Chat() {
       <Header />
       <Sidebar />
       <ModelDropdown />
-      <Textfield />
+      <ChatTexts />
     </div>
   );
 }
