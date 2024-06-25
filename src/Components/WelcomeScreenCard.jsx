@@ -1,15 +1,22 @@
 import React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import { useNavigate } from 'react-router-dom';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Gptlogo from "../assets/Gptlogo.png"
 
 export default function WelsomeScreenCard() {
+
+    const navigate = useNavigate();
+
+    const handleWelcomeLoginClick = () => {
+        navigate('/Login');
+    };
+
     return (
-        <Box
-            sx={{
+        <div
+            style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -49,11 +56,12 @@ export default function WelsomeScreenCard() {
                     <Button
                         style={{ color: 'white', backgroundColor: '#C20F0F' }}
                         size="large"
+                        onClick={handleWelcomeLoginClick}
                     >
                         Log In
                     </Button>
                 </CardContent>
             </Card>
-        </Box>
+        </div>
     );
 }

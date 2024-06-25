@@ -5,6 +5,7 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Gptlogo from "../assets/Gptlogo.png"
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const handleSubmit = (event) => {
@@ -15,6 +16,12 @@ export default function Login() {
       password: data.get('password'),
     });
   };
+
+  const navigate = useNavigate();
+
+    const handleLoginClick = () => {
+        navigate('/Chat');
+    };
 
   return (
 
@@ -50,6 +57,7 @@ export default function Login() {
           type="submit"
           //   fullWidth
           variant="contained"
+          onClick={handleLoginClick}
           style={{ color: 'white', backgroundColor: '#C20F0F' }}
         >
           Log In
