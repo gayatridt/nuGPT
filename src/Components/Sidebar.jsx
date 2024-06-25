@@ -18,12 +18,10 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import Button from '@mui/material/Button';
 
-export default function Sidebar() {
+export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(true);
 
   const handleHistoryClick = () => {
     setHistoryOpen(!historyOpen);
@@ -33,8 +31,8 @@ export default function Sidebar() {
     setDarkMode(!darkMode);
   };
 
-  const toggleDrawer = (open) => () => {
-    setDrawerOpen(open);
+  const toggleDrawer = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const borderStyle = '1px solid #f5f5f5';
@@ -42,12 +40,12 @@ export default function Sidebar() {
 
   const DrawerList = (
     <Box
-      sx={{ width: 250, bgcolor: 'black', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+      sx={{ width: 300, bgcolor: 'black', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
       role="presentation"
     >
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
-          <IconButton onClick={toggleDrawer(false)} sx={{ color: 'white' }}>
+          <IconButton onClick={toggleDrawer} sx={{ color: 'white' }}>
             <MenuIcon />
           </IconButton>
           <IconButton onClick={handleThemeToggle} sx={{ color: 'white' }}>
@@ -111,12 +109,14 @@ export default function Sidebar() {
 
   return (
     <div>
-      <IconButton onClick={toggleDrawer(true)} sx={{ color: drawerOpen ? 'white' : 'black', position: 'absolute', top: 16, left: 16 }}>
-        <MenuIcon />
-      </IconButton>
-      <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer variant="persistent" open={isSidebarOpen}>
         {DrawerList}
       </Drawer>
+      {!isSidebarOpen && (
+        <IconButton onClick={toggleDrawer} sx={{ color: 'black', position: 'absolute', top: 16, left: 16, zIndex: 1300 }}>
+          <MenuIcon />
+        </IconButton>
+      )}
     </div>
   );
 }
