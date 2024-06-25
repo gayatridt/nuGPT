@@ -10,6 +10,7 @@ import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NeuLogo from "../assets/NeuLogo.jpg"
 import Gptlogo from "../assets/Gptlogo.png"
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -75,6 +76,12 @@ export default function Header() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const navigate = useNavigate();
+
+  const handleWelcomeLoginClick = () => {
+      navigate('/Login');
+  };
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -94,7 +101,7 @@ export default function Header() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={handleWelcomeLoginClick}>Logout</MenuItem>
     </Menu>
   );
 
