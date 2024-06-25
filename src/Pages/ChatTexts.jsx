@@ -20,6 +20,14 @@ function ChatTexts() {
               text: 'Certainly! Below is the course description for INFO 5001.\nINFO 5001. Application Modeling and Design. (4 Hours)\nPractices social-technical software engineering methods and tools to solve real-world problems......\n\nSource Links for this response:\nLink 1\nLink 2',
             },
           ]);
+        } else if (input === 'On what day and time is this course taught?') {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: 'answer',
+              text: 'INFO 5001. Application Modeling and Design is taught on Saturdays 9:00 AM PST',
+            },
+          ]);
         } else {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -41,9 +49,6 @@ function ChatTexts() {
 
   return (
     <Container maxWidth="md" style={{ width: '1000px' }}>
-      {/* <Typography variant="h4" gutterBottom>
-        Chat Interface
-      </Typography> */}
       <Paper
         style={{
           padding: '20px',

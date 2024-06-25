@@ -113,7 +113,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         {DrawerList}
       </Drawer>
       {!isSidebarOpen && (
-        <IconButton onClick={toggleDrawer} sx={{ color: 'black', position: 'absolute', top: 16, left: 16, zIndex: 1300 }}>
+        <IconButton onClick={toggleDrawer} sx={{ color: 'black', position: 'absolute', top: 16, left: 60, zIndex: 1300 }}>
           <MenuIcon />
         </IconButton>
       )}
