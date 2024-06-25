@@ -5,6 +5,7 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Gptlogo from "../assets/Gptlogo.png"
+import { Typography } from '@mui/material';
 
 export default function Login() {
   const handleSubmit = (event) => {
@@ -18,9 +19,12 @@ export default function Login() {
 
   return (
 
-    <div style={{ width: 400, height: 500, borderColor: 'black' }}>
+    <div style={{ width: 450, height: 500, borderColor: 'black' }}>
       <Box component="form" onSubmit={handleSubmit} noValidate >
         <img src={Gptlogo} alt="Logo" style={{ width: '60px', height: '60px' }} />
+        <br/>  <br/>
+        <Typography style={{color:"black", fontSize:"18px"}}>Enter the Email address associated with your account and we will send you a link to reset your password</Typography>
+       <br/>
         <TextField
           margin="normal"
           required
@@ -32,7 +36,7 @@ export default function Login() {
           autoFocus
         />
        
-        
+       <br/>  <br/>
         <Button
           type="submit"
           //   fullWidth
