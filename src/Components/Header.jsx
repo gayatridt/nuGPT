@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import InputBase from '@mui/material/InputBase';
 import NeuLogo from "../assets/NeuLogo.jpg"
 import Gptlogo from "../assets/Gptlogo.png"
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Header() {
+export default function Header({ isSidebarOpen }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
