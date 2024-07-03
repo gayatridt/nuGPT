@@ -14,15 +14,27 @@ import HistoryIcon from '@mui/icons-material/History';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import LabelIcon from '@mui/icons-material/Label';
 import HelpIcon from '@mui/icons-material/Help';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
+export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, setDarkMode }) {
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-
+  //const [darkMode, setDarkMode] = useState(true);
   const handleHistoryClick = () => {
     setHistoryOpen(!historyOpen);
   };
@@ -40,30 +52,38 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   const DrawerList = (
     <Box
-      sx={{ width: 300, bgcolor: 'black', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+      sx={{
+        width: 300,
+        bgcolor: darkMode ? 'background.default' : '#f7f4ef',
+        color: 'text.primary',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
       role="presentation"
     >
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 2 }}>
-          <IconButton onClick={toggleDrawer} sx={{ color: 'white' }}>
+          <IconButton onClick={toggleDrawer} sx={{ color: 'text.primary' }}>
             <MenuIcon />
           </IconButton>
-          <IconButton onClick={handleThemeToggle} sx={{ color: 'white' }}>
-            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          <IconButton onClick={handleThemeToggle} sx={{ color: 'text.primary' }}>
+            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Box>
         <List>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle }}>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
             <ListItemButton>
-              <ListItemIcon sx={{ color: 'white' }}>
+              <ListItemIcon sx={{ color: 'text.primary' }}>
                 <ChatIcon />
               </ListItemIcon>
               <ListItemText primary="New Chat" />
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle }} onClick={handleHistoryClick}>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={handleHistoryClick}>
             <ListItemButton>
-              <ListItemIcon sx={{ color: 'white' }}>
+              <ListItemIcon sx={{ color: 'text.primary' }}>
                 <HistoryIcon />
               </ListItemIcon>
               <ListItemText primary="History" />
@@ -73,9 +93,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
           <Collapse in={historyOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {['Course Syllabus Descrip', 'Course Syllabus Descrip', 'Course Syllabus Descrip'].map((text, index) => (
-                <ListItem key={index} disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle }}>
+                <ListItem key={index} disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
                   <ListItemButton sx={{ pl: 4 }}>
-                    <ListItemIcon sx={{ color: 'white' }}>
+                    <ListItemIcon sx={{ color: 'text.primary' }}>
                       <InboxIcon />
                     </ListItemIcon>
                     <ListItemText primary={text} />
@@ -84,9 +104,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
               ))}
             </List>
           </Collapse>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle }}>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
             <ListItemButton>
-              <ListItemIcon sx={{ color: 'white' }}>
+              <ListItemIcon sx={{ color: 'text.primary' }}>
                 <LabelIcon />
               </ListItemIcon>
               <ListItemText primary="Pinned Chats" />
@@ -95,9 +115,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         </List>
       </Box>
       <List>
-        <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle }}>
+        <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
           <ListItemButton>
-            <ListItemIcon sx={{ color: 'white' }}>
+            <ListItemIcon sx={{ color: 'text.primary' }}>
               <HelpIcon />
             </ListItemIcon>
             <ListItemText primary="FAQ" />
@@ -108,15 +128,18 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   );
 
   return (
-    <div>
-      <Drawer variant="persistent" open={isSidebarOpen}>
-        {DrawerList}
-      </Drawer>
-      {!isSidebarOpen && (
-        <IconButton onClick={toggleDrawer} sx={{ color: 'black', position: 'absolute', top: 16, left: 60, zIndex: 1300 }}>
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <div>
+        <Drawer variant="persistent" open={isSidebarOpen}>
+          {DrawerList}
+        </Drawer>
+        {!isSidebarOpen && (
+          <IconButton onClick={toggleDrawer} sx={{ color: darkMode ? 'black' : 'black', position: 'absolute', top: 16, left: 60, zIndex: 1300 }}>
           <MenuIcon />
         </IconButton>
-      )}
-    </div>
+        )}
+      </div>
+    </ThemeProvider>
   );
 }
+

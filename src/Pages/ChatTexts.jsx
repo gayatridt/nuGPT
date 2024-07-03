@@ -1,8 +1,34 @@
 import React, { useState } from 'react';
-import { Container, TextField, IconButton, List, ListItem, ListItemText, Paper, Typography, Box, InputAdornment, Grid, Button } from '@mui/material';
+import { Container, TextField, IconButton, List, ListItem, ListItemText, Paper, Box, InputAdornment, Grid, Button } from '@mui/material';
 import { VolumeUp, FileCopy, ThumbUp, ThumbDown, Replay, Send } from '@mui/icons-material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-function ChatTexts() {
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+    background: {
+      default: '#f7f4ef',
+      paper: 'white',
+    },
+  },
+});
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    background: {
+      default: '#424242',
+      paper: '#616161',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#bbbbbb',
+    },
+  },
+});
+
+
+function ChatTexts({ isSidebarOpen, darkMode }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
@@ -10,7 +36,6 @@ function ChatTexts() {
     if (input.trim()) {
       setMessages([...messages, { type: 'question', text: input }]);
       setInput('');
-      // Simulate an answer based on the input
       setTimeout(() => {
         if (input === 'Give me the course description for INFO 5001') {
           setMessages((prevMessages) => [
@@ -38,109 +63,148 @@ function ChatTexts() {
     }
   };
 
-  const handleActionClick = (action, message) => {
-    console.log(`${action} clicked for message: ${message.text}`);
-  };
-
   const handlePromptClick = (prompt) => {
     setInput(prompt);
     handleSend();
   };
 
   return (
-    <Container maxWidth="md" style={{ width: '1000px' }}>
+    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Paper
-        style={{
+        sx={{
           padding: '20px',
-          marginBottom: '20px',
-          height: '60vh',
-          overflowY: 'auto',
-          backgroundColor: '#f5f5f5',
+          minHeight: 'calc(100vh - 200px)',
+          height: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: 'background.default',
+          color: 'text.primary',
         }}
       >
         {messages.length === 0 ? (
-          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%' }}>
-            <Grid item>
-              <Button
-                variant="outlined"
-                style={{ color: 'white', backgroundColor: 'red', borderColor: 'red' }}
-                onClick={() => handlePromptClick('Search about a course')}
-              >
-                Search about a course
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="outlined"
-                style={{ color: 'white', backgroundColor: 'red', borderColor: 'red' }}
-                onClick={() => handlePromptClick('Check the recent events happening at the campus')}
-              >
-                Check the recent events happening at the campus
-              </Button>
+          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '200px'  }}>
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    color: 'black',
+                    borderRadius: '20px',
+                    backgroundColor: 'white',
+                    borderColor: 'grey',
+                    width: '200px',
+                    height: '80px',
+                    fontWeight: '600',
+                    '&:hover': {
+                      backgroundColor: '#168aad',
+                      color: 'white',
+                    },
+                  }}
+                  onClick={() => handlePromptClick('Search about a course')}
+                >
+                  Search about a course
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    color: 'black',
+                    borderRadius: '20px',
+                    backgroundColor: 'white',
+                    borderColor: 'grey',
+                    width: '200px',
+                    height: '80px',
+                    fontWeight: '600',
+                    '&:hover': {
+                      backgroundColor: '#168aad',
+                      color: 'white',
+                    },
+                  }}
+                  onClick={() => handlePromptClick('Check the recent events happening at the campus')}
+                >
+                  Check the recent events happening at the campus
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         ) : (
-          <List>
+          <Box sx={{ flexGrow: 1 }}>
             {messages.map((message, index) => (
-              <ListItem key={index} style={{ justifyContent: message.type === 'question' ? 'flex-start' : 'flex-end' }}>
-                <Box>
-                  <Paper
-                    style={{
-                      padding: '10px',
-                      borderRadius: '15px',
-                      marginBottom: '5px',
-                      backgroundColor: message.type === 'question' ? 'white' : 'white',
-                      color: message.type === 'question' ? 'black' : 'red',
-                    }}
-                  >
-                    <ListItemText primary={message.text} />
-                  </Paper>
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  justifyContent: message.type === 'question' ? 'flex-end' : 'flex-start',
+                  mb: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    maxWidth: '70%',
+                    p: 2,
+                    borderRadius: 2,
+                    backgroundColor: message.type === 'question' ? '#AAEAAA' : '#77DDDD',
+                    color: 'black',
+                  }}
+                >
+                  <ListItemText primary={message.text} />
                   {message.type === 'answer' && (
-                    <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <IconButton size="small" onClick={() => handleActionClick('Volume', message)} style={{ color: 'red' }}>
-                        <VolumeUp fontSize="small" />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                      <IconButton size="small">
+                        <VolumeUp />
                       </IconButton>
-                      <IconButton size="small" onClick={() => handleActionClick('Copy', message)} style={{ color: 'red' }}>
-                        <FileCopy fontSize="small" />
+                      <IconButton size="small">
+                        <FileCopy />
                       </IconButton>
-                      <IconButton size="small" onClick={() => handleActionClick('Like', message)} style={{ color: 'red' }}>
-                        <ThumbUp fontSize="small" />
+                      <IconButton size="small">
+                        <ThumbUp />
                       </IconButton>
-                      <IconButton size="small" onClick={() => handleActionClick('Dislike', message)} style={{ color: 'red' }}>
-                        <ThumbDown fontSize="small" />
+                      <IconButton size="small">
+                        <ThumbDown />
                       </IconButton>
-                      <IconButton size="small" onClick={() => handleActionClick('Reload', message)} style={{ color: 'red' }}>
-                        <Replay fontSize="small" />
+                      <IconButton size="small">
+                        <Replay />
                       </IconButton>
                     </Box>
                   )}
                 </Box>
-              </ListItem>
+              </Box>
             ))}
-          </List>
+          </Box>
         )}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginTop: 'auto',
+            paddingTop: '10px',
+            borderTop: '1px solid',
+            borderTopColor: 'divider',
+          }}
+        >
+          <TextField
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            fullWidth
+            placeholder="Type your message here"
+            multiline
+            maxRows={3}
+            variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end" aria-label="send" onClick={handleSend}>
+                    <Send />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}
+          />
+        </Box>
       </Paper>
-      <TextField
-        label="How may I help you?"
-        variant="outlined"
-        fullWidth
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') handleSend();
-        }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton color="primary" onClick={handleSend} style={{ color: 'red' }}>
-                <Send />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        sx={{ mb: 2 }}
-      />
-    </Container>
+    </ThemeProvider>
   );
 }
 

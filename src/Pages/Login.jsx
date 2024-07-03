@@ -66,7 +66,7 @@ export default function Login() {
         <Grid container>
           <Grid item xs>
             <br />
-            <Link >
+            <Link href = "/Forgotpassword">
               Forgot Username/Password?
             </Link>
           </Grid>
@@ -77,15 +77,6 @@ export default function Login() {
           type="submit"
           variant="contained"
           style={{ color: 'white', backgroundColor: '#C20F0F' }}
-        //   sx={{
-        //     color: '#C20F0F',  
-        //     backgroundColor:'white', 
-
-        //   }}
-        //   startIcon={
-        //     <img src={NeuLogo} alt="Logo" style={{ width: '20px', height: '20px' }}
-        //     />
-        //   }
         >
           {/* <img src={NeuLogo} alt="Logo" style={{ width: '20px', height: '20px' }} /> */}
           Continue with Nu email
