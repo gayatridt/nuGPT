@@ -82,7 +82,7 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
         }}
       >
         {messages.length === 0 ? (
-          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '200px'  }}>
+          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '200px' }}>
             <Grid container spacing={2} justifyContent="center" alignItems="center">
               <Grid item>
                 <Button
@@ -144,8 +144,8 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
                     maxWidth: '70%',
                     p: 2,
                     borderRadius: 2,
-                    backgroundColor: message.type === 'question' ? '#AAEAAA' : '#77DDDD',
-                    color: 'black',
+                    backgroundColor: message.type === 'question' ? (darkMode ? '#1C202C' : '#000A68') : (darkMode ? '#7A8195' : '#C9C7C7'),//'#',
+                    color: message.type === 'question' ? (darkMode ? 'white' : 'white'): (darkMode ? 'white' : 'black'),
                   }}
                 >
                   <ListItemText primary={message.text} />
