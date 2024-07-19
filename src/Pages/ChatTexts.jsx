@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, IconButton, List, ListItem, ListItemText, Paper, Box, InputAdornment, Grid, Button } from '@mui/material';
+import { Container, TextField, IconButton, ListItemText, Paper, Box, InputAdornment, Grid, Button } from '@mui/material';
 import { VolumeUp, FileCopy, ThumbUp, ThumbDown, Replay, Send } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -27,36 +27,41 @@ const darkTheme = createTheme({
   },
 });
 
-
 function ChatTexts({ isSidebarOpen, darkMode }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [thumbs, setThumbs] = useState({}); // To track thumbs up/down status
 
-  const handleSend = () => {
-    if (input.trim()) {
-      setMessages([...messages, { type: 'question', text: input }]);
+  const handleSend = (replayMessage = null, regenerated = false) => {
+    const text = replayMessage || input;
+    if (text.trim()) {
+      if (!replayMessage) {
+        setMessages([...messages, { type: 'question', text }]);
+      }
       setInput('');
       setTimeout(() => {
-        if (input === 'Give me the course description for INFO 5001') {
+        if (text === 'Give me the course description for INFO 5001') {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
               type: 'answer',
               text: 'Certainly! Below is the course description for INFO 5001.\nINFO 5001. Application Modeling and Design. (4 Hours)\nPractices social-technical software engineering methods and tools to solve real-world problems......\n\nSource Links for this response:\nLink 1\nLink 2',
+              regenerated,
             },
           ]);
-        } else if (input === 'On what day and time is this course taught?') {
+        } else if (text === 'On what day and time is this course taught?') {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
               type: 'answer',
               text: 'INFO 5001. Application Modeling and Design is taught on Saturdays 9:00 AM PST',
+              regenerated,
             },
           ]);
         } else {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { type: 'answer', text: 'This is a simulated answer.' },
+            { type: 'answer', text: 'This is a simulated answer.', regenerated },
           ]);
         }
       }, 1000);
@@ -66,6 +71,38 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
   const handlePromptClick = (prompt) => {
     setInput(prompt);
     handleSend();
+  };
+
+  const handleVolumeUp = (message) => {
+    const utterance = new SpeechSynthesisUtterance(message.text);
+    speechSynthesis.speak(utterance);
+    console.log('Playing audio for message:', message.text);
+  };
+
+  const handleFileCopy = (message) => {
+    navigator.clipboard.writeText(message.text);
+    console.log('Copied message to clipboard:', message.text);
+  };
+
+  const handleThumbUp = (index) => {
+    setThumbs((prevThumbs) => ({
+      ...prevThumbs,
+      [index]: prevThumbs[index] === 'up' ? null : 'up',
+    }));
+    console.log('Thumbs up for message:', messages[index].text);
+  };
+
+  const handleThumbDown = (index) => {
+    setThumbs((prevThumbs) => ({
+      ...prevThumbs,
+      [index]: prevThumbs[index] === 'down' ? null : 'down',
+    }));
+    console.log('Thumbs down for message:', messages[index].text);
+  };
+
+  const handleReplay = (message) => {
+    handleSend(message.text, true);
+    console.log('Replaying message:', message.text);
   };
 
   return (
@@ -90,13 +127,14 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
                   sx={{
                     color: 'black',
                     borderRadius: '20px',
-                    backgroundColor: 'white',
+                    backgroundColor: '#C7D0EA',
                     borderColor: 'grey',
                     width: '200px',
                     height: '80px',
+                    fontSize: 'small',
                     fontWeight: '600',
                     '&:hover': {
-                      backgroundColor: '#168aad',
+                      backgroundColor: '#3F465C',
                       color: 'white',
                     },
                   }}
@@ -111,13 +149,13 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
                   sx={{
                     color: 'black',
                     borderRadius: '20px',
-                    backgroundColor: 'white',
+                    backgroundColor: '#C7D0EA',
                     borderColor: 'grey',
                     width: '200px',
                     height: '80px',
                     fontWeight: '600',
                     '&:hover': {
-                      backgroundColor: '#168aad',
+                      backgroundColor: '#3F465C',
                       color: 'white',
                     },
                   }}
@@ -144,26 +182,37 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
                     maxWidth: '70%',
                     p: 2,
                     borderRadius: 2,
-                    backgroundColor: message.type === 'question' ? (darkMode ? '#1C202C' : '#000A68') : (darkMode ? '#7A8195' : '#C9C7C7'),//'#',
-                    color: message.type === 'question' ? (darkMode ? 'white' : 'white'): (darkMode ? 'white' : 'black'),
+                    backgroundColor: message.type === 'question' ? (darkMode ? '#1C202C' : '#000A68') : (darkMode ? '#7A8195' : '#C9C7C7'),
+                    color: message.type === 'question' ? (darkMode ? 'white' : 'white') : (darkMode ? 'white' : 'black'),
                   }}
                 >
-                  <ListItemText primary={message.text} />
+                  <ListItemText 
+                    primary={message.text} 
+                    secondary={message.regenerated ? "Regenerated" : null} // Show "Regenerated" for regenerated messages
+                  />
                   {message.type === 'answer' && (
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => handleVolumeUp(message)}>
                         <VolumeUp />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => handleFileCopy(message)}>
                         <FileCopy />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleThumbUp(index)}
+                        sx={{ color: thumbs[index] === 'up' ? 'green' : '#616161' }}
+                      >
                         <ThumbUp />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleThumbDown(index)}
+                        sx={{ color: thumbs[index] === 'down' ? 'red' : '#616161' }}
+                      >
                         <ThumbDown />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => handleReplay(message)}>
                         <Replay />
                       </IconButton>
                     </Box>
@@ -194,7 +243,7 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="send" onClick={handleSend}>
+                  <IconButton edge="end" aria-label="send" onClick={() => handleSend()}>
                     <Send />
                   </IconButton>
                 </InputAdornment>
