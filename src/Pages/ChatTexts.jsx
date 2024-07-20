@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, TextField, IconButton, ListItemText, Paper, Box, InputAdornment, Grid, Button } from '@mui/material';
 import { VolumeUp, FileCopy, ThumbUp, ThumbDown, Replay, Send } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -27,61 +27,58 @@ const darkTheme = createTheme({
   },
 });
 
-function ChatTexts({ isSidebarOpen, darkMode }) {
-  const [messages, setMessages] = useState([]);
+function ChatTexts({ isSidebarOpen, darkMode, chatInstance, updateChatInstance, isMobile }) {
   const [input, setInput] = useState('');
-  const [thumbs, setThumbs] = useState({}); // To track thumbs up/down status
+  const [thumbs, setThumbs] = useState({});
+
+  useEffect(() => {
+    if (chatInstance) {
+      setThumbs({});
+    }
+  }, [chatInstance]);
 
   const handleSend = (replayMessage = null, regenerated = false) => {
     const text = replayMessage || input;
     if (text.trim()) {
-      if (!replayMessage) {
-        setMessages([...messages, { type: 'question', text }]);
-      }
+      const newMessage = { type: 'question', text };
+      const updatedMessages = [...chatInstance.messages, newMessage];
+      updateChatInstance({ ...chatInstance, messages: updatedMessages });
       setInput('');
       setTimeout(() => {
+        let answerMessage;
         if (text === 'Give me the course description for INFO 5001') {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              type: 'answer',
-              text: 'Certainly! Below is the course description for INFO 5001.\nINFO 5001. Application Modeling and Design. (4 Hours)\nPractices social-technical software engineering methods and tools to solve real-world problems......\n\nSource Links for this response:\nLink 1\nLink 2',
-              regenerated,
-            },
-          ]);
+          answerMessage = {
+            type: 'answer',
+            text: 'Certainly! Below is the course description for INFO 5001.\nINFO 5001. Application Modeling and Design. (4 Hours)\nPractices social-technical software engineering methods and tools to solve real-world problems......\n\nSource Links for this response:\nLink 1\nLink 2',
+            regenerated,
+          };
         } else if (text === 'On what day and time is this course taught?') {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              type: 'answer',
-              text: 'INFO 5001. Application Modeling and Design is taught on Saturdays 9:00 AM PST',
-              regenerated,
-            },
-          ]);
+          answerMessage = {
+            type: 'answer',
+            text: 'INFO 5001. Application Modeling and Design is taught on Saturdays 9:00 AM PST',
+            regenerated,
+          };
         } else {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { type: 'answer', text: 'This is a simulated answer.', regenerated },
-          ]);
+          answerMessage = { type: 'answer', text: 'This is a simulated answer.', regenerated };
         }
+        const finalMessages = [...updatedMessages, answerMessage];
+        updateChatInstance({ ...chatInstance, messages: finalMessages });
       }, 1000);
     }
   };
 
   const handlePromptClick = (prompt) => {
     setInput(prompt);
-    handleSend();
+    handleSend(prompt);
   };
 
   const handleVolumeUp = (message) => {
     const utterance = new SpeechSynthesisUtterance(message.text);
     speechSynthesis.speak(utterance);
-    console.log('Playing audio for message:', message.text);
   };
 
   const handleFileCopy = (message) => {
     navigator.clipboard.writeText(message.text);
-    console.log('Copied message to clipboard:', message.text);
   };
 
   const handleThumbUp = (index) => {
@@ -89,7 +86,6 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
       ...prevThumbs,
       [index]: prevThumbs[index] === 'up' ? null : 'up',
     }));
-    console.log('Thumbs up for message:', messages[index].text);
   };
 
   const handleThumbDown = (index) => {
@@ -97,29 +93,37 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
       ...prevThumbs,
       [index]: prevThumbs[index] === 'down' ? null : 'down',
     }));
-    console.log('Thumbs down for message:', messages[index].text);
   };
 
   const handleReplay = (message) => {
     handleSend(message.text, true);
-    console.log('Replaying message:', message.text);
   };
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <Paper
-        sx={{
-          padding: '20px',
-          minHeight: 'calc(100vh - 200px)',
-          height: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: 'background.default',
-          color: 'text.primary',
-        }}
-      >
-        {messages.length === 0 ? (
-          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '200px' }}>
+       <Container maxWidth="xl">
+        <Paper
+           sx={{
+            padding: '20px',
+            height: isMobile ? 'auto' : 'calc(100vh - 250px)', // Full height for desktop, auto for mobile
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: 'background.default',
+            color: 'text.primary',
+            width: isMobile ? '100%' : 'calc(100% - 600px)', // Adjust this value as needed
+            marginLeft: isMobile ? '0' : '400px',
+            marginRight: isMobile ? '0' : '200px',
+            maxWidth: isMobile ? '100%' : '1200px', // Reduced max width for desktop
+            overflow: isMobile ? 'visible' : 'hidden',
+            position: isMobile ? 'static' : 'fixed',
+            top: isMobile ? 'auto' : '150px',
+            left: isMobile ? 'auto' : '0',
+            right: isMobile ? 'auto' : '0',
+            bottom: isMobile ? 'auto' : '0',
+          }}
+        >
+        {chatInstance.messages.length === 0 ? (
+          <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '20px' }}>
             <Grid container spacing={2} justifyContent="center" alignItems="center">
               <Grid item>
                 <Button
@@ -167,8 +171,12 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
             </Grid>
           </Grid>
         ) : (
-          <Box sx={{ flexGrow: 1 }}>
-            {messages.map((message, index) => (
+          <Box sx={{ 
+            flexGrow: 1, 
+            overflowY: 'auto', 
+            height: isMobile ? 'auto' : 'calc(100% - 60px)' // Adjust based on your input field height
+          }}>
+            {chatInstance.messages.map((message, index) => (
               <Box
                 key={index}
                 sx={{
@@ -188,7 +196,7 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
                 >
                   <ListItemText 
                     primary={message.text} 
-                    secondary={message.regenerated ? "Regenerated" : null} // Show "Regenerated" for regenerated messages
+                    secondary={message.regenerated ? "Regenerated" : null}
                   />
                   {message.type === 'answer' && (
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
@@ -226,7 +234,7 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            marginTop: 'auto',
+            marginTop: '15px',
             paddingTop: '10px',
             borderTop: '1px solid',
             borderTopColor: 'divider',
@@ -253,6 +261,7 @@ function ChatTexts({ isSidebarOpen, darkMode }) {
           />
         </Box>
       </Paper>
+      </Container>
     </ThemeProvider>
   );
 }

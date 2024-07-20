@@ -1,13 +1,18 @@
-import * as React from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Gptlogo from "../assets/Gptlogo.png"
 import { useNavigate } from 'react-router-dom';
+import { Container } from '@mui/material';
+
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -17,73 +22,83 @@ export default function Login() {
     });
   };
 
-  const navigate = useNavigate();
-
-    const handleLoginClick = () => {
-        navigate('/Chat');
-    };
+  const handleLoginClick = () => {
+    navigate('/Chat');
+  };
 
   return (
-
-    <div style={{ width: 400, height: 500, borderColor: 'black' }}>
-      <Box component="form" onSubmit={handleSubmit} noValidate >
-        <img src={Gptlogo} alt="Logo" style={{ width: '60px', height: '60px' }} />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          autoFocus
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-        {/* <FormControlLabel
-              control={<Checkbox value="remember"  />}
-              label="Remember me"
-            /> */}
-        <br />  <br />
-        <Button
-          type="submit"
-          //   fullWidth
-          variant="contained"
-          onClick={handleLoginClick}
-          style={{ color: 'white', backgroundColor: '#C20F0F' }}
-        >
-          Log In
-        </Button>
-
-        <Grid container>
-          <Grid item xs>
-            <br />
-            <Link href = "/Forgotpassword">
-              Forgot Username/Password?
-            </Link>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <img src={Gptlogo} alt="Logo" style={{ width: 'clamp(40px, 15vw, 60px)', height: 'auto', marginBottom: '1rem' }} />
+        <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+          Log in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            onClick={handleLoginClick}
+            sx={{
+              mt: 3,
+              mb: 2,
+              bgcolor: '#C20F0F',
+              '&:hover': {
+                bgcolor: '#990c0c',
+              },
+            }}
+          >
+            Log In
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="/Forgotpassword" variant="body2">
+                Forgot Username/Password?
+              </Link>
+            </Grid>
           </Grid>
-
-        </Grid>
-        <br />
-        <Button
-          type="submit"
-          variant="contained"
-          style={{ color: 'white', backgroundColor: '#C20F0F' }}
-        >
-          {/* <img src={NeuLogo} alt="Logo" style={{ width: '20px', height: '20px' }} /> */}
-          Continue with Nu email
-        </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 3,
+              bgcolor: '#C20F0F',
+              '&:hover': {
+                bgcolor: '#990c0c',
+              },
+            }}
+          >
+            Continue with Nu email
+          </Button>
+        </Box>
       </Box>
-
-
-    </div>
+    </Container>
   );
 }

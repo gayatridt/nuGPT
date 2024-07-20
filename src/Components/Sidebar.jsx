@@ -32,9 +32,18 @@ const darkTheme = createTheme({
   },
 });
 
-export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, setDarkMode }) {
+export default function Sidebar({ 
+  isSidebarOpen, 
+  setIsSidebarOpen, 
+  darkMode, 
+  setDarkMode,
+  createNewChat,
+  chatInstances,
+  setActiveChatId,
+  isMobile
+}) {
   const [historyOpen, setHistoryOpen] = useState(false);
-  //const [darkMode, setDarkMode] = useState(true);
+
   const handleHistoryClick = () => {
     setHistoryOpen(!historyOpen);
   };
@@ -53,7 +62,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, set
   const DrawerList = (
     <Box
       sx={{
-        width: 300,
+        width: isMobile ? '100%' : 300,
         bgcolor: darkMode ? 'background.default' : '#f7f4ef',
         color: 'text.primary',
         height: '100%',
@@ -73,7 +82,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, set
           </IconButton>
         </Box>
         <List>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={createNewChat}>
             <ListItemButton>
               <ListItemIcon sx={{ color: 'text.primary' }}>
                 <ChatIcon />
@@ -92,13 +101,18 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, set
           </ListItem>
           <Collapse in={historyOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {['Course Syllabus Descrip', 'Course Syllabus Descrip', 'Course Syllabus Descrip'].map((text, index) => (
-                <ListItem key={index} disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
+              {chatInstances.map((chat, index) => (
+                <ListItem 
+                  key={chat.id} 
+                  disablePadding 
+                  sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}
+                  onClick={() => setActiveChatId(chat.id)}
+                >
                   <ListItemButton sx={{ pl: 4 }}>
                     <ListItemIcon sx={{ color: 'text.primary' }}>
                       <InboxIcon />
                     </ListItemIcon>
-                    <ListItemText primary={text} />
+                    <ListItemText primary={`Chat ${index + 1}`} />
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -130,16 +144,19 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, darkMode, set
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <div>
-        <Drawer variant="persistent" open={isSidebarOpen}>
+        <Drawer 
+          variant={isMobile ? "temporary" : "persistent"}
+          open={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        >
           {DrawerList}
         </Drawer>
-        {!isSidebarOpen && (
+        {!isSidebarOpen && !isMobile && (
           <IconButton onClick={toggleDrawer} sx={{ color: darkMode ? 'black' : 'black', position: 'absolute', top: 16, left: 60, zIndex: 1300 }}>
-          <MenuIcon />
-        </IconButton>
+            <MenuIcon />
+          </IconButton>
         )}
       </div>
     </ThemeProvider>
   );
 }
-
