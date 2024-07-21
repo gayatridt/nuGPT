@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, TextField, IconButton, ListItemText, Paper, Box, InputAdornment, Grid, Button } from '@mui/material';
 import { VolumeUp, FileCopy, ThumbUp, ThumbDown, Replay, Send } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { CircularProgress } from '@mui/material';
+import useApi from '../Services/api'; 
 
 const lightTheme = createTheme({
   palette: {
@@ -30,6 +32,7 @@ const darkTheme = createTheme({
 function ChatTexts({ isSidebarOpen, darkMode, chatInstance, updateChatInstance, isMobile }) {
   const [input, setInput] = useState('');
   const [thumbs, setThumbs] = useState({});
+  const { fetchAnswer, isLoading } = useApi(); 
 
   useEffect(() => {
     if (chatInstance) {
@@ -37,33 +40,30 @@ function ChatTexts({ isSidebarOpen, darkMode, chatInstance, updateChatInstance, 
     }
   }, [chatInstance]);
 
-  const handleSend = (replayMessage = null, regenerated = false) => {
+  const handleSend = async (replayMessage = null, regenerated = false) => {
     const text = replayMessage || input;
     if (text.trim()) {
       const newMessage = { type: 'question', text };
       const updatedMessages = [...chatInstance.messages, newMessage];
       updateChatInstance({ ...chatInstance, messages: updatedMessages });
       setInput('');
-      setTimeout(() => {
-        let answerMessage;
-        if (text === 'Give me the course description for INFO 5001') {
-          answerMessage = {
+      
+      try {
+        // Call the API
+        const response = await fetchAnswer(text);
+        if (response) {
+          const answerMessage = {
             type: 'answer',
-            text: 'Certainly! Below is the course description for INFO 5001.\nINFO 5001. Application Modeling and Design. (4 Hours)\nPractices social-technical software engineering methods and tools to solve real-world problems......\n\nSource Links for this response:\nLink 1\nLink 2',
+            text: `${response.answer}\n\nYou can find more information here: ${response.link}`,
             regenerated,
           };
-        } else if (text === 'On what day and time is this course taught?') {
-          answerMessage = {
-            type: 'answer',
-            text: 'INFO 5001. Application Modeling and Design is taught on Saturdays 9:00 AM PST',
-            regenerated,
-          };
-        } else {
-          answerMessage = { type: 'answer', text: 'This is a simulated answer.', regenerated };
+          const finalMessages = [...updatedMessages, answerMessage];
+          updateChatInstance({ ...chatInstance, messages: finalMessages });
         }
-        const finalMessages = [...updatedMessages, answerMessage];
-        updateChatInstance({ ...chatInstance, messages: finalMessages });
-      }, 1000);
+      } catch (error) {
+        console.error('Error fetching answer:', error);
+        // Optionally, you can add error handling here, such as displaying an error message to the user
+      }
     }
   };
 
@@ -243,36 +243,41 @@ function ChatTexts({ isSidebarOpen, darkMode, chatInstance, updateChatInstance, 
             ))}
           </Box>
         )}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            marginTop: '15px',
-            paddingTop: '10px',
-            borderTop: '1px solid',
-            borderTopColor: 'divider',
+    <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          marginTop: '15px',
+          paddingTop: '10px',
+          borderTop: '1px solid',
+          borderTopColor: 'divider',
+        }}
+      >
+        <TextField
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          fullWidth
+          placeholder="Type your message here"
+          multiline
+          maxRows={3}
+          variant="outlined"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton 
+                  edge="end" 
+                  aria-label="send" 
+                  onClick={() => handleSend()}
+                  disabled={isLoading}  // Disable button while loading
+                >
+                  {isLoading ? <CircularProgress size={24} /> : <Send />}
+                </IconButton>
+              </InputAdornment>
+            ),
           }}
-        >
-          <TextField
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            fullWidth
-            placeholder="Type your message here"
-            multiline
-            maxRows={3}
-            variant="outlined"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton edge="end" aria-label="send" onClick={() => handleSend()}>
-                    <Send />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}
-          />
-        </Box>
+          sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}
+        />
+      </Box>
       </Paper>
       </Container>
     </ThemeProvider>
