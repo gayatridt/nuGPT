@@ -102,25 +102,38 @@ function ChatTexts({ isSidebarOpen, darkMode, chatInstance, updateChatInstance, 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
        <Container maxWidth="xl">
-        <Paper
-           sx={{
+       <Paper
+          sx={(theme) => ({
             padding: '20px',
-            height: isMobile ? 'auto' : 'calc(100vh - 250px)', // Full height for desktop, auto for mobile
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: 'background.default',
             color: 'text.primary',
-            width: isMobile ? '100%' : 'calc(100% - 600px)', // Adjust this value as needed
-            marginLeft: isMobile ? '0' : '400px',
-            marginRight: isMobile ? '0' : '200px',
-            maxWidth: isMobile ? '100%' : '1200px', // Reduced max width for desktop
-            overflow: isMobile ? 'visible' : 'hidden',
-            position: isMobile ? 'static' : 'fixed',
-            top: isMobile ? 'auto' : '150px',
-            left: isMobile ? 'auto' : '0',
-            right: isMobile ? 'auto' : '0',
-            bottom: isMobile ? 'auto' : '0',
-          }}
+            overflow: 'auto',
+            [theme.breakpoints.down('sm')]: { // Mobile phones
+              width: '100%',
+              height: 'calc(100vh - 200px)',
+              margin: 0,
+              position: 'static',
+            },
+            [theme.breakpoints.between('sm', 'md')]: { // Tablets
+              width: '100%',
+              height: 'calc(100vh - 200px)',
+              margin: '0 auto',
+              position: 'static',
+            },
+            [theme.breakpoints.up('md')]: { // Desktops
+              width: 'calc(100% - 600px)',
+              height: 'calc(100vh - 250px)',
+              marginLeft: '400px',
+              marginRight: '200px',
+              maxWidth: '1200px',
+              position: 'fixed',
+              top: '150px',
+              left: 0,
+              right: 0,
+            },
+          })}
         >
         {chatInstance.messages.length === 0 ? (
           <Grid container spacing={2} justifyContent="center" alignItems="center" style={{ height: '100%', marginTop: '20px' }}>
