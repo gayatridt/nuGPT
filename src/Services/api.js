@@ -1,4 +1,5 @@
-import create from 'zustand';
+import create from "zustand";
+// const apiUrl = import.meta.env.VITE_API_URL;
 
 const useApi = create((set) => ({
   isLoading: false,
@@ -6,23 +7,31 @@ const useApi = create((set) => ({
   fetchAnswer: async (question) => {
     set({ isLoading: true, error: null });
     try {
-      // API call
-      const response = await new Promise((resolve) => {
-        setTimeout(() => {
-          const encodedQuestion = encodeURIComponent(question);
-          resolve({
-            answer: `Here's what I found about "${question}":`,
-            link: `https://en.wikipedia.org/wiki/${encodedQuestion}`
-          });
-        }, 1000); // 1 second delay
+      // API call to send question and get response
+      const response = await fetch(`/api/v1/query`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // any other headers of API
+        },
+        body: JSON.stringify({ question }),
       });
+
+      if (!response.ok) {
+        throw new Error("API request failed");
+      }
+
+      const data = await response.json();
       set({ isLoading: false });
-      return response;
+      return {
+        answer: data.answer,
+        // link: data.sourceLink // If needed
+      };
     } catch (error) {
       set({ isLoading: false, error: error.message });
       return null;
     }
-  }
+  },
 }));
 
 export default useApi;
