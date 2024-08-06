@@ -40,7 +40,8 @@ export default function Sidebar({
   createNewChat,
   chatInstances,
   setActiveChatId,
-  isMobile
+  isMobile,
+  setActiveComponent 
 }) {
   const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -54,6 +55,11 @@ export default function Sidebar({
 
   const toggleDrawer = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleNewChat = () => {
+    createNewChat();
+    setActiveComponent('Chat'); // Ensure ChatTexts is shown after creating a new chat
   };
 
   const borderStyle = '1px solid #f5f5f5';
@@ -82,7 +88,7 @@ export default function Sidebar({
           </IconButton>
         </Box>
         <List>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={createNewChat}>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={handleNewChat}>
             <ListItemButton>
               <ListItemIcon sx={{ color: 'text.primary' }}>
                 <ChatIcon />
@@ -106,7 +112,10 @@ export default function Sidebar({
                   key={chat.id} 
                   disablePadding 
                   sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}
-                  onClick={() => setActiveChatId(chat.id)}
+                  onClick={() => {
+                    setActiveChatId(chat.id);
+                    setActiveComponent('Chat'); // Ensure ChatTexts is shown
+                  }}
                 >
                   <ListItemButton sx={{ pl: 4 }}>
                     <ListItemIcon sx={{ color: 'text.primary' }}>
@@ -128,8 +137,9 @@ export default function Sidebar({
           </ListItem>
         </List>
       </Box>
-      <List>
-        <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
+      
+      <List >
+        <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={() => setActiveComponent('Faq')}>
           <ListItemButton>
             <ListItemIcon sx={{ color: 'text.primary' }}>
               <HelpIcon />
@@ -138,6 +148,7 @@ export default function Sidebar({
           </ListItemButton>
         </ListItem>
       </List>
+     
     </Box>
   );
 

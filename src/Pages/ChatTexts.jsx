@@ -63,6 +63,13 @@ function ChatTexts({
     }
   }, [chatInstance]);
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevents default action of adding a new line
+      handleSend();
+    }
+  };
+  
   const handleSend = async (replayMessage = null, regenerated = false) => {
     const text = replayMessage || input;
     if (text.trim()) {
@@ -333,6 +340,7 @@ function ChatTexts({
             <TextField
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
               fullWidth
               placeholder="Type your message here"
               multiline

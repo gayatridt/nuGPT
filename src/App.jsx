@@ -5,6 +5,7 @@ import Chat from "./Pages/Chat";
 import Login from "./Pages/Login";
 import Forgotpassword from "./Pages/Forgotpassword";
 import "./App.css";
+import Faq from "./Pages/Faq"
 
 function App() {
   const [count, setCount] = useState(0);
@@ -18,10 +19,10 @@ function App() {
             <Route path="/Login" element={<Login />} />
             <Route path="/Forgotpassword" element={<Forgotpassword />} />
             <Route path="/Chat" element={<Chat />} />
+            <Route path="/Faq" element={<Faq />} />
           </Routes>
         </Router>
       }
-      {/* <WelcomeScreen /> */}
     </>
   );
 }

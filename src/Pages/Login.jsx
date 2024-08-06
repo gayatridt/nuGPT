@@ -5,12 +5,14 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Gptlogo from "../assets/Gptlogo.png"
+import Gptlogo from "../assets/Gptlogo.png";
 import { useNavigate } from 'react-router-dom';
 import { Container } from '@mui/material';
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Login() {
+  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -23,7 +25,11 @@ export default function Login() {
   };
 
   const handleLoginClick = () => {
-    navigate('/Chat');
+    setOpen(true); 
+    setTimeout(() => {
+      setOpen(false); 
+      navigate('/Chat');
+    }, 1000); 
   };
 
   return (
@@ -37,8 +43,8 @@ export default function Login() {
         }}
       >
         <img src={Gptlogo} alt="Logo" style={{ width: 'clamp(40px, 15vw, 60px)', height: 'auto', marginBottom: '1rem' }} />
-        <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-          Log in
+        <Typography component="h1" variant="h5" sx={{ mb: 3 }} style={{color:'black'}}>
+          Log In
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -99,6 +105,14 @@ export default function Login() {
           </Button>
         </Box>
       </Box>
+      
+      {/* Backdrop */}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 }
