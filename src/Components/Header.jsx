@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import NeuLogo from "../assets/NeuLogo.jpg";
+import NeuLogo from "../assets/NeuLogo.png";
 import Gptlogo from "../assets/Gptlogo.png";
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
