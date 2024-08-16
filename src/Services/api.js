@@ -1,5 +1,7 @@
 import create from "zustand";
-// const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
+
+console.log("API URL:", apiUrl);
 
 const useApi = create((set) => ({
   isLoading: false,
@@ -8,7 +10,7 @@ const useApi = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       // API call to send question and get response
-      const response = await fetch(`/api/v1/query`, {
+      const response = await fetch(`${apiUrl}/query`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
