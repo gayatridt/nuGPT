@@ -18,6 +18,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import PushPinIcon from '@mui/icons-material/PushPin';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const lightTheme = createTheme({
@@ -39,14 +40,20 @@ export default function Sidebar({
   setDarkMode,
   createNewChat,
   chatInstances,
+  setChatInstances,
   setActiveChatId,
   isMobile,
   setActiveComponent 
 }) {
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [pinnedChatsOpen, setPinnedChatsOpen] = useState(false);
 
   const handleHistoryClick = () => {
     setHistoryOpen(!historyOpen);
+  };
+
+  const handlePinnedChatsClick = () => {
+    setPinnedChatsOpen(!pinnedChatsOpen);
   };
 
   const handleThemeToggle = () => {
@@ -59,11 +66,49 @@ export default function Sidebar({
 
   const handleNewChat = () => {
     createNewChat();
-    setActiveComponent('Chat'); // Ensure ChatTexts is shown after creating a new chat
+    setActiveComponent('Chat');
+  };
+
+  const togglePinChat = (chatId) => {
+    setChatInstances(prevInstances => 
+      prevInstances.map(chat => 
+        chat.id === chatId ? { ...chat, isPinned: !chat.isPinned } : chat
+      )
+    );
   };
 
   const borderStyle = '1px solid #f5f5f5';
   const marginStyle = '1mm';
+
+  const ChatListItem = ({ chat, index, isPinned }) => (
+    <ListItem 
+      disablePadding 
+      sx={{ 
+        border: borderStyle, 
+        marginBottom: marginStyle, 
+        marginRight: marginStyle, 
+        bgcolor: darkMode ? 'background.default' : 'white',
+      }}
+    >
+      <ListItemButton
+        onClick={() => {
+          setActiveChatId(chat.id);
+          setActiveComponent('Chat');
+        }}
+      >
+        <ListItemIcon sx={{ color: 'text.primary' }}>
+          <InboxIcon />
+        </ListItemIcon>
+        <ListItemText primary={`Chat ${index + 1}`} />
+      </ListItemButton>
+      <IconButton 
+        onClick={() => togglePinChat(chat.id)}
+        sx={{ color: chat.isPinned ? 'primary.main' : 'text.secondary' }}
+      >
+        <PushPinIcon />
+      </IconButton>
+    </ListItem>
+  );
 
   const DrawerList = (
     <Box
@@ -96,6 +141,22 @@ export default function Sidebar({
               <ListItemText primary="New Chat" />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={handlePinnedChatsClick}>
+            <ListItemButton>
+              <ListItemIcon sx={{ color: 'text.primary' }}>
+                <LabelIcon />
+              </ListItemIcon>
+              <ListItemText primary="Pinned Chats" />
+              {pinnedChatsOpen ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={pinnedChatsOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {chatInstances.filter(chat => chat.isPinned).map((chat, index) => (
+                <ChatListItem key={chat.id} chat={chat} index={index} isPinned={true} />
+              ))}
+            </List>
+          </Collapse>
           <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={handleHistoryClick}>
             <ListItemButton>
               <ListItemIcon sx={{ color: 'text.primary' }}>
@@ -107,38 +168,15 @@ export default function Sidebar({
           </ListItem>
           <Collapse in={historyOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {chatInstances.map((chat, index) => (
-                <ListItem 
-                  key={chat.id} 
-                  disablePadding 
-                  sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}
-                  onClick={() => {
-                    setActiveChatId(chat.id);
-                    setActiveComponent('Chat'); // Ensure ChatTexts is shown
-                  }}
-                >
-                  <ListItemButton sx={{ pl: 4 }}>
-                    <ListItemIcon sx={{ color: 'text.primary' }}>
-                      <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={`Chat ${index + 1}`} />
-                  </ListItemButton>
-                </ListItem>
+              {chatInstances.filter(chat => !chat.isPinned).map((chat, index) => (
+                <ChatListItem key={chat.id} chat={chat} index={index} isPinned={false} />
               ))}
             </List>
           </Collapse>
-          <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }}>
-            <ListItemButton>
-              <ListItemIcon sx={{ color: 'text.primary' }}>
-                <LabelIcon />
-              </ListItemIcon>
-              <ListItemText primary="Pinned Chats" />
-            </ListItemButton>
-          </ListItem>
         </List>
       </Box>
       
-      <List >
+      <List>
         <ListItem disablePadding sx={{ border: borderStyle, marginBottom: marginStyle, marginRight: marginStyle, bgcolor: darkMode ? 'background.default' : 'white', }} onClick={() => setActiveComponent('Faq')}>
           <ListItemButton>
             <ListItemIcon sx={{ color: 'text.primary' }}>
@@ -148,7 +186,6 @@ export default function Sidebar({
           </ListItemButton>
         </ListItem>
       </List>
-     
     </Box>
   );
 
