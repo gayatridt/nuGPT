@@ -16,8 +16,8 @@ const WelcomeScreen = () => {
   return (
     <Box
       sx={{
-        width: '100vw',
-        height: '100vh',
+        width: '140vh',
+        height: '90vh',
         backgroundColor: '#0a001f',
         backgroundImage: 'radial-gradient(circle at center, #1a0042 0%, #0a001f 100%)',
         display: 'flex',
@@ -106,8 +106,8 @@ const WelcomeScreen = () => {
                         backgroundColor: '#990c0c',
                     },
                     position: 'absolute',
-                    bottom: '300px',
-                    left: '55%',
+                    bottom: '200px',
+                    left: '60%',
                 }}
                 size="large"
                 onClick={handleWelcomeLoginClick}

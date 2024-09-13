@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -7,31 +7,50 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Gptlogo from "../assets/Gptlogo.png";
 import { useNavigate } from 'react-router-dom';
-import { Container } from '@mui/material';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-
+import { Container, Backdrop, CircularProgress, Snackbar } from '@mui/material';
+ 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@northeastern\.edu$/;
+ 
 export default function Login() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+ 
   const navigate = useNavigate();
-
+ 
+  const validateEmail = (email) => {
+    if (!email) {
+      setEmailError('Email is required');
+      return false;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError('Invalid email. Must be a @northeastern.edu address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+ 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const isEmailValid = validateEmail(email);
+ 
+    if (isEmailValid && password) {
+      setOpen(true);
+      // Simulating API call
+      setTimeout(() => {
+        setOpen(false);
+        navigate('/Chat');
+      }, 1000);
+    } else {
+      setSnackbarMessage('Please enter a valid Northeastern email and password');
+      setSnackbarOpen(true);
+    }
   };
-
-  const handleLoginClick = () => {
-    setOpen(true); 
-    setTimeout(() => {
-      setOpen(false); 
-      navigate('/Chat');
-    }, 1000); 
-  };
-
+ 
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -56,6 +75,10 @@ export default function Login() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!emailError}
+            helperText={emailError}
           />
           <TextField
             margin="normal"
@@ -66,12 +89,13 @@ export default function Login() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            onClick={handleLoginClick}
             sx={{
               mt: 3,
               mb: 2,
@@ -90,29 +114,20 @@ export default function Login() {
               </Link>
             </Grid>
           </Grid>
-          <Button
-            fullWidth
-            variant="contained"
-            sx={{
-              mt: 3,
-              bgcolor: '#C20F0F',
-              '&:hover': {
-                bgcolor: '#990c0c',
-              },
-            }}
-          >
-            Continue with Nu email
-          </Button>
         </Box>
       </Box>
-      
-      {/* Backdrop */}
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+      />
     </Container>
   );
 }
